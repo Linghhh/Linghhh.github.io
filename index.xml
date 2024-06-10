@@ -1,0 +1,10 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>linghhh&#39;s blog</title>
+        <link>http://localhost:1313/</link>
+        <description>学无止境，心如止水</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1012938530@qq.com (linghhh)</managingEditor>
+            <webMaster>1012938530@qq.com (linghhh)</webMaster>
+            <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+        </channel>
+</rss>
