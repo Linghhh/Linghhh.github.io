@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Pimpl及Qt实现 - linghhh&#39;s blog</title><meta name="Description" content="学无止境，心如止水"><meta property="og:url" content="http://example.org/posts/pimpl%E5%8F%8Aqt%E5%AE%9E%E7%8E%B0/">
+  <meta property="og:site_name" content="linghhh&#39;s blog">
+  <meta property="og:title" content="Pimpl及Qt实现">
+  <meta property="og:description" content="PIMPL pimpl全称为pointer to implementation,意思是指向实现的指针。 其优点如下： 1. 减小编译依赖(调整pimpl类后不需要重">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-06-14T22:56:27+08:00">
+    <meta property="article:modified_time" content="2024-06-14T22:56:27+08:00">
+    <meta property="article:tag" content="Qt">
+    <meta property="article:tag" content="C&#43;&#43;">
+    <meta property="og:image" content="http://example.org/images/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://example.org/images/logo.png">
+  <meta name="twitter:title" content="Pimpl及Qt实现">
+  <meta name="twitter:description" content="PIMPL pimpl全称为pointer to implementation,意思是指向实现的指针。 其优点如下： 1. 减小编译依赖(调整pimpl类后不需要重">
+<meta name="application-name" content="linghhh">
+<meta name="apple-mobile-web-app-title" content="linghhh"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/pimpl%E5%8F%8Aqt%E5%AE%9E%E7%8E%B0/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Pimpl及Qt实现",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/example.org\/posts\/pimpl%E5%8F%8Aqt%E5%AE%9E%E7%8E%B0\/"
+        },"genre": "posts","keywords": "Qt, C\u002b\u002b","wordcount":  1362 ,
+        "url": "http:\/\/example.org\/posts\/pimpl%E5%8F%8Aqt%E5%AE%9E%E7%8E%B0\/","datePublished": "2024-06-14T22:56:27+08:00","dateModified": "2024-06-14T22:56:27+08:00","publisher": {
+            "@type": "Organization",
+            "name": "","logo": "http:\/\/example.org\/images\/logo.png"},"author": {
+                "@type": "Person",
+                "name": "linghhh"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="linghhh&#39;s blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/images/logo.png"
+        data-srcset="/images/logo.png, /images/logo.png 1.5x, /images/logo.png 2x"
+        data-sizes="auto"
+        alt="/images/logo.png"
+        title="/images/logo.png" />linghhh</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="linghhh&#39;s blog"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/images/logo.png"
+        data-srcset="/images/logo.png, /images/logo.png 1.5x, /images/logo.png 2x"
+        data-sizes="auto"
+        alt="/images/logo.png"
+        title="/images/logo.png" />linghhh</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Pimpl及Qt实现</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>linghhh</a></span>&nbsp;<span class="post-category">included in <a href="/categories/qt%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Qt源码分析</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-06-14">2024-06-14</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;1362 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;3 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#pimpl">PIMPL</a></li>
+        <li><a href="#pimpl-简单实现">PIMPL 简单实现</a></li>
+        <li><a href="#qt-实现">Qt 实现</a></li>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h3 id="pimpl">PIMPL</h3>
+<pre><code>pimpl全称为pointer to implementation,意思是指向实现的指针。
+其优点如下：
+1. 减小编译依赖(调整pimpl类后不需要重新编译)
+2. 接口和实现分离(将数据和方法实现隐藏起来，只对用户开放头文件)
+3. 提高可移植性(具有稳定的ABI)
+</code></pre>
+<h3 id="pimpl-简单实现">PIMPL 简单实现</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C++" data-lang="C++"><span class="line"><span class="cl">    <span class="c1">//Person.h
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="cp">#include</span> <span class="cpf">&lt;memory&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="k">class</span> <span class="nc">Person</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">class</span> <span class="nc">PersonData</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">PersonData</span><span class="o">&gt;</span> <span class="n">pData</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C++" data-lang="C++"><span class="line"><span class="cl">    <span class="c1">//Person.c
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="cp">#include</span> <span class="cpf">&#34;Person.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="k">class</span> <span class="nc">PersonData</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">public</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">PersonData</span><span class="p">(</span><span class="k">const</span> <span class="n">PersonData</span><span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">PersonData</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">PersonData</span><span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span></code></pre></div><p>我们一般只暴露<code>Person.h</code>中的<code>Person</code>类的接口，具体的实现在<code>PersonData</code>类中，是对用户隐藏的。这样当我们有业务需求的更改时，只需要修改具体的实现类，而头文件不需要修改，因此不需要重新编译<code>Person</code>类，可以<strong>加快编译速度</strong>。同时，可以<strong>保持对外接口不变</strong>。</p>
+<h3 id="qt-实现">Qt 实现</h3>
+<p><code>QThread</code>类使用到了 Pimpl，这个技术在 Qt 中非常常见，所谓的 d指针 和 q指针 就是用来实现PIMPL的</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C++" data-lang="C++"><span class="line"><span class="cl"><span class="c1">// Thread.h
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">class</span> <span class="nc">QThread</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QObject</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Q_OBJECT</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="k">private</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Q_DECLARE_PRIVATE</span><span class="p">(</span><span class="n">QThread</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// qGetPtrHelper 为模板函数，无论d_ptr是普通指针还是智能指针都能成功返回
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define Q_DECLARE_PRIVATE(Class) \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    inline Class##Private* d_func() noexcept \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    { Q_CAST_IGNORE_ALIGN(return reinterpret_cast&lt;Class##Private *&gt;(qGetPtrHelper(d_ptr));) } \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    inline const Class##Private* d_func() const noexcept \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    { Q_CAST_IGNORE_ALIGN(return reinterpret_cast&lt;const Class##Private *&gt;(qGetPtrHelper(d_ptr));) } \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    friend class Class##Private;
+</span></span></span></code></pre></div><p>不难看出<code>Q_DECLARE_PRIVATE(QThread)</code>展开之后其实就是提供了访问<code>QThreadPrivate</code>指针也就是所谓的<code>d指针</code>的方法<code>d_func()</code>,这个类也就是所谓的实现类。
+<!-- raw HTML omitted -->这里有一个问题是<code>d_ptr</code>是在哪里声明的，在<code>QThread.h</code>中我们并没有看到，其实<code>b_ptr</code>是在基类<code>QObject</code>类中定义的。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C++" data-lang="C++"><span class="line"><span class="cl"><span class="c1">// QObject.h
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">class</span> <span class="nc">QObject</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="k">protected</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">QScopedPointer</span><span class="o">&lt;</span><span class="n">QObjectData</span><span class="o">&gt;</span> <span class="n">d_ptr</span><span class="p">;</span> <span class="c1">// 等同于std::unique_ptr
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="k">private</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Q_DISABLE_COPY</span><span class="p">(</span><span class="n">QObject</span><span class="p">)</span> <span class="c1">// 禁止拷贝
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></code></pre></div><p><code>QThread</code>的 PIMPL 为 <code>QThreadPrivate</code>，其实还包着一层 <code>QThreadData</code>，这两个类都是在 <code>qthread_p.h</code>里声明的，但这个头文件是隐藏起来的。</p>
+<p>在 <code>QThread</code>中我们一般不直接通过 <code>d_ptr</code> 访问数据类，我们通过一个宏定义来访问,其次，我们还有一种情况是在数据访问对外开放的类，在Qt中这两种情况分别可以说用Q_D和Q_Q宏定义来访问。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C++" data-lang="C++"><span class="line"><span class="cl"><span class="c1">// qthread.cpp
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">QThread</span><span class="o">::</span><span class="n">QThread</span><span class="p">(</span><span class="n">QThreadPrivate</span> <span class="o">&amp;</span><span class="n">dd</span><span class="p">,</span> <span class="n">QObject</span> <span class="o">*</span><span class="n">parent</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="o">:</span> <span class="n">QObject</span><span class="p">(</span><span class="n">dd</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Q_D</span><span class="p">(</span><span class="n">QThread</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// fprintf(stderr, &#34;QThreadData %p taken from private data for thread %p\n&#34;, d-&gt;data, this);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">d</span><span class="o">-&gt;</span><span class="n">data</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">storeRelaxed</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//其中
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define Q_D(Class) Class * const d = d_func()
+</span></span></span></code></pre></div><p><code>QThread</code>类中并没有使用到<code>q_ptr</code>q指针，q指针的作用是访问主类(q指针指向主类)，在这里即<code>QThread</code>。
+<!-- raw HTML omitted -->实际上使用q指针的方法和d指针基本一致，<code>Q_DECLARE_PRIVATE(QThread)</code>对应<code>Q_DECLARE_PUBLIC(QThread)</code>,<code>Q_D</code>对应<code>Q_Q</code>,其中<code>q_ptr</code>在<code>QObjectData</code>类中声明，我们的<code>PIMPL</code>的基类一定是<code>QObjectData</code>类。</p>
+<h3 id="总结">总结</h3>
+<ol>
+<li>
+<p>QT中利用d指针和q指针实现 PIMPL,任何类都可以实现，但需要保证：</p>
+<blockquote>
+<ul>
+<li>主类(MainClass)声明d指针</li>
+<li>主类使用宏定义 Q_DECLARE_PRIVATE(MainClass)生成访问实现类接口d_func()</li>
+<li>主类使用宏定义生成局部变量d访问实现类(MainClassPrivate)</li>
+<li>实现类声明可放在源文件也可以放在头文件中，但必须保证对外隐藏</li>
+<li>实现类(MainClassPrivate)可声明q指针访问主类</li>
+<li>实现类使用宏定义Q_DECLARE_PUBLIC(MainClass)生成访问主类接口q_func()</li>
+<li>实现类使用宏定义Q_Q生成局部变量q访问主类</li>
+<li>实现类要保证不可拷贝</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>主类可直接继承<code>QObject</code>，实现类继承<code>QObjectData</code>，这样不需要单独声明<code>d_ptr</code>和<code>q_ptr</code></p>
+</li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2024-06-14</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://example.org/posts/pimpl%E5%8F%8Aqt%E5%AE%9E%E7%8E%B0/" data-title="Pimpl及Qt实现" data-hashtags="Qt,C&#43;&#43;"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://example.org/posts/pimpl%E5%8F%8Aqt%E5%AE%9E%E7%8E%B0/" data-hashtag="Qt"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://example.org/posts/pimpl%E5%8F%8Aqt%E5%AE%9E%E7%8E%B0/" data-title="Pimpl及Qt实现"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://example.org/posts/pimpl%E5%8F%8Aqt%E5%AE%9E%E7%8E%B0/" data-title="Pimpl及Qt实现"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://example.org/posts/pimpl%E5%8F%8Aqt%E5%AE%9E%E7%8E%B0/" data-title="Pimpl及Qt实现"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/qt/">Qt</a>,&nbsp;<a href="/tags/c&#43;&#43;/">C&#43;&#43;</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"></div>
+</div>
+</article></div>
+            </main></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"search":{"algoliaAppID":"","algoliaIndex":"","algoliaSearchKey":"","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

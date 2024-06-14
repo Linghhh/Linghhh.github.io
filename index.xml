@@ -3,16 +3,15 @@
         <title>linghhh&#39;s blog</title>
         <link>http://example.org/</link>
         <description>学无止境，心如止水</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1012938530@qq.com (linghhh)</managingEditor>
-            <webMaster>1012938530@qq.com (linghhh)</webMaster><lastBuildDate>Mon, 10 Jun 2024 20:43:13 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 14 Jun 2024 22:56:27 &#43;0800</lastBuildDate>
             <atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
         <item>
-    <title>Test</title>
-    <link>http://example.org/posts/test/</link>
-    <pubDate>Mon, 10 Jun 2024 20:43:13 &#43;0800</pubDate>
+    <title>Pimpl及Qt实现</title>
+    <link>http://example.org/posts/pimpl%E5%8F%8Aqt%E5%AE%9E%E7%8E%B0/</link>
+    <pubDate>Fri, 14 Jun 2024 22:56:27 &#43;0800</pubDate>
     <author>linghhh</author>
-    <guid>http://example.org/posts/test/</guid>
-    <description><![CDATA[]]></description>
+    <guid>http://example.org/posts/pimpl%E5%8F%8Aqt%E5%AE%9E%E7%8E%B0/</guid>
+    <description><![CDATA[PIMPL pimpl全称为pointer to implementation,意思是指向实现的指针。 其优点如下： 1. 减小编译依赖(调整pimpl类后不需要重]]></description>
 </item>
 </channel>
 </rss>
